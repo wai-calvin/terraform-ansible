@@ -1,0 +1,46 @@
+- name: Spring-pet-clinic Application
+  hosts: aws
+  become: true
+  tasks:
+    - name: Install OpenJDK
+      yum:
+        name: java-1.8.0-openjdk-devel
+    - name: Install tomcat
+      yum:
+        name: tomcat
+    - name: Install tomcat webapps
+      yum:
+        name: tomcat-webapps, tomcat-admin-webapps, tomcat-docs-webapp, tomcat-javadoc
+    - name: Start and enable tomcat
+      systemd:
+        state: started
+        name: tomcat
+    - name: install maven
+      yum:
+        name: maven
+    - name: Install git
+      yum:
+        name: git
+        state: present
+        update_cache: true
+    - name: Delete directory
+      file:
+        state: absent
+        path: /home/centos/spring-petclinic
+    - name: clone that sucker
+      shell: git clone https://github.com/wai-calvin/spring-petclinic.git
+    - name: Change dir and run appication
+      shell: |
+        cd spring-petclinic
+        mvn tomcat7:run
+
+
+
+
+
+
+
+
+
+
+

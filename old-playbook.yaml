@@ -1,0 +1,44 @@
+- name: install tomcat server
+  hosts: all
+  roles:
+    - role: gantsign.maven
+      maven_version: '3.5.0'
+  become: true
+
+  tasks:
+  - name: Install OpenJDK
+    yum:
+      name: java-1.8.0-openjdk-devel
+
+  - name: download tomcat server packages
+    get_url:
+      url: https://archive.apache.org/dist/tomcat/tomcat-7/v7.0.59/src/apache-tomcat-7.0.59-src.tar.gz
+      dest: /usr/local
+
+  - name: extract tomcat packages
+    unarchive:
+      src: /usr/local/apache-tomcat-7.0.59-src.tar.gz
+      dest: /usr/local
+      remote_src: yes
+
+  - name: set permissions and cd into directory
+    shell: chmod +x /usr/local/apache-tomcat-7.0.59-src/bin/catalina.sh && cd /usr/local/apache-tomcat-7.0.59-src/bin/
+
+  - name: start tomcat services
+    become: true
+    shell: ./catalina.sh start
+
+
+  - name: Install git
+    yum:
+      name: git
+      state: present
+      update_cache: yes
+
+  - name: clone that sucker 
+    shell: rm -rf spring-petclinic && git clone https://github.com/wai-calvin/spring-petclinic.git && cd spring-petclinic
+    
+  # - name: run that sucker
+  #   become: true
+  #   command: mvn tomcat7:run
+
